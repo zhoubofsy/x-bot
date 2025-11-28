@@ -21,8 +21,8 @@ import (
 )
 
 const (
-	baseURL  = "https://api.twitter.com/2"
-	oauthURL = "https://api.twitter.com"
+	baseURL  = "https://api.x.com/2"
+	oauthURL = "https://api.x.com"
 )
 
 type Client interface {
@@ -205,7 +205,19 @@ func (c *client) ReplyToTweet(ctx context.Context, tweetID string, text string) 
 
 func (c *client) handleError(resp *http.Response) error {
 	body, _ := io.ReadAll(resp.Body)
-	return fmt.Errorf("twitter API error: status=%d, body=%s", resp.StatusCode, string(body))
+
+	// 添加更详细的错误提示
+	hint := ""
+	switch resp.StatusCode {
+	case 401:
+		hint = " (认证失败: 请检查 API Key/Secret 和 Access Token/Secret 是否正确)"
+	case 403:
+		hint = " (权限不足: 请检查 Twitter App 权限设置，确保已开启 Read/Write 权限，并重新生成 Access Token)"
+	case 429:
+		hint = " (请求过于频繁: 已触发速率限制，请稍后重试)"
+	}
+
+	return fmt.Errorf("twitter API error: status=%d%s, body=%s", resp.StatusCode, hint, string(body))
 }
 
 func (c *client) signRequest(req *http.Request, method, endpoint string, params map[string]string) {
