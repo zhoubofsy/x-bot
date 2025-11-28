@@ -48,8 +48,8 @@ func main() {
 		logger.Fatal("连接数据库失败", zap.Error(err))
 	}
 
-	// 自动迁移
-	if err := postgres.AutoMigrate(db); err != nil {
+	// 自动迁移（仅创建不存在的表，不修改已存在的约束）
+	if err := postgres.MigrateWithoutConstraints(db); err != nil {
 		logger.Fatal("数据库迁移失败", zap.Error(err))
 	}
 
@@ -151,4 +151,3 @@ func initLogger(cfg config.LogConfig) *zap.Logger {
 	logger, _ := zapCfg.Build()
 	return logger
 }
-

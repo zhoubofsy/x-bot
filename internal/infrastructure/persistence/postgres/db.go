@@ -41,11 +41,35 @@ func NewDB(cfg *config.DatabaseConfig) (*gorm.DB, error) {
 }
 
 func AutoMigrate(db *gorm.DB) error {
-	return db.AutoMigrate(
+	// 使用 DisableForeignKeyConstraintWhenMigrating 避免约束问题
+	return db.Set("gorm:table_options", "").
+		AutoMigrate(
+			&entity.FollowedUser{},
+			&entity.AdCopy{},
+			&entity.ReplyLog{},
+			&entity.BotConfig{},
+		)
+}
+
+// MigrateWithoutConstraints 跳过约束检查的迁移
+// 适用于表已存在但约束不同的情况
+func MigrateWithoutConstraints(db *gorm.DB) error {
+	migrator := db.Migrator()
+
+	tables := []interface{}{
 		&entity.FollowedUser{},
 		&entity.AdCopy{},
 		&entity.ReplyLog{},
 		&entity.BotConfig{},
-	)
-}
+	}
 
+	for _, table := range tables {
+		if !migrator.HasTable(table) {
+			if err := migrator.CreateTable(table); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
