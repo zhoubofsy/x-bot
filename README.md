@@ -181,6 +181,78 @@ Authorization: Bearer <API_KEY>
 5. 记录回复日志
 ```
 
+## 测试
+
+```bash
+# 设置基础变量
+export BASE_URL="http://localhost:8080"
+export API_KEY=""  # 如果设置了 API_KEY 环境变量
+
+# ============ 健康检查 (无需认证) ============
+curl ${BASE_URL}/health
+
+# ============ 工作流 ============
+
+# 1. 同步关注列表
+curl -X POST "${BASE_URL}/api/v1/workflow/sync-following" \
+  -H "Authorization: Bearer ${API_KEY}"
+
+# 2. 执行工作流 (JSON 参数)
+curl -X POST "${BASE_URL}/api/v1/workflow/execute" \
+  -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"tweet_count": 10, "dry_run": true}'
+
+# 3. 执行工作流 (查询参数)
+curl -X POST "${BASE_URL}/api/v1/workflow/execute?tweet_count=10&dry_run=true" \
+  -H "Authorization: Bearer ${API_KEY}"
+
+# ============ 统计与日志 ============
+
+# 4. 获取统计信息
+curl "${BASE_URL}/api/v1/stats" \
+  -H "Authorization: Bearer ${API_KEY}"
+
+# 5. 获取回复日志
+curl "${BASE_URL}/api/v1/reply-logs?limit=20" \
+  -H "Authorization: Bearer ${API_KEY}"
+
+# ============ 广告文案管理 ============
+
+# 6. 获取所有广告文案
+curl "${BASE_URL}/api/v1/ad-copies" \
+  -H "Authorization: Bearer ${API_KEY}"
+
+# 7. 获取单个广告文案
+curl "${BASE_URL}/api/v1/ad-copies/1" \
+  -H "Authorization: Bearer ${API_KEY}"
+
+# 8. 创建广告文案
+curl -X POST "${BASE_URL}/api/v1/ad-copies" \
+  -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "黑客松推广3",
+    "content": "🔥 参加黑客松？我们的工具助你一臂之力！#Hackathon",
+    "category": "hackathon",
+    "priority": 5
+  }'
+
+# 9. 更新广告文案
+curl -X PUT "${BASE_URL}/api/v1/ad-copies/1" \
+  -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "黑客松推广1-更新",
+    "priority": 20,
+    "is_active": true
+  }'
+
+# 10. 删除广告文案
+curl -X DELETE "${BASE_URL}/api/v1/ad-copies/1" \
+  -H "Authorization: Bearer ${API_KEY}"
+```
+
 ## 🛡️ 注意事项
 
 1. **Twitter API 限制**: 注意 API 速率限制，建议设置合理的回复间隔
