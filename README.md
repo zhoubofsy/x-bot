@@ -193,9 +193,9 @@ curl ${BASE_URL}/health
 
 # ============ 工作流 ============
 
-# 1. 同步关注列表
-curl -X POST "${BASE_URL}/api/v1/workflow/sync-following" \
-  -H "Authorization: Bearer ${API_KEY}"
+# # 1. 同步关注列表
+# curl -X POST "${BASE_URL}/api/v1/workflow/sync-following" \
+#   -H "Authorization: Bearer ${API_KEY}"
 
 # 2. 执行工作流 (JSON 参数)
 curl -X POST "${BASE_URL}/api/v1/workflow/execute" \
@@ -251,6 +251,43 @@ curl -X PUT "${BASE_URL}/api/v1/ad-copies/1" \
 # 10. 删除广告文案
 curl -X DELETE "${BASE_URL}/api/v1/ad-copies/1" \
   -H "Authorization: Bearer ${API_KEY}"
+
+
+# ============ 监控用户管理 ============
+
+# 1. 获取所有监控用户
+curl "${BASE_URL}/api/v1/users" \
+  -H "Authorization: Bearer ${API_KEY}"
+
+# 2. 添加单个监控用户
+curl -X POST "${BASE_URL}/api/v1/users" \
+  -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "twitter_user_id": "12345678",
+    "username": "example_user",
+    "display_name": "Example User"
+  }'
+
+# 3. 批量添加监控用户
+curl -X POST "${BASE_URL}/api/v1/users/batch" \
+  -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '[
+    {"twitter_user_id": "111111", "username": "user1", "display_name": "User One"},
+    {"twitter_user_id": "222222", "username": "user2", "display_name": "User Two"},
+    {"twitter_user_id": "333333", "username": "user3", "display_name": "User Three"}
+  ]'
+
+# 4. 删除监控用户 (使用数据库 ID)
+curl -X DELETE "${BASE_URL}/api/v1/users/1" \
+  -H "Authorization: Bearer ${API_KEY}"
+
+# 5. 更新用户状态 (启用/禁用)
+curl -X PATCH "${BASE_URL}/api/v1/users/12345678/status" \
+  -H "Authorization: Bearer ${API_KEY}" \
+  -H "Content-Type: application/json" \
+  -d '{"is_active": false}'
 ```
 
 ## 🛡️ 注意事项

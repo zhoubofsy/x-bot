@@ -10,11 +10,13 @@ type Router struct {
 	engine          *gin.Engine
 	workflowHandler *handler.WorkflowHandler
 	adCopyHandler   *handler.AdCopyHandler
+	userHandler     *handler.UserHandler
 }
 
 func NewRouter(
 	workflowHandler *handler.WorkflowHandler,
 	adCopyHandler *handler.AdCopyHandler,
+	userHandler *handler.UserHandler,
 	mode string,
 	apiKey string,
 ) *Router {
@@ -30,6 +32,7 @@ func NewRouter(
 		engine:          engine,
 		workflowHandler: workflowHandler,
 		adCopyHandler:   adCopyHandler,
+		userHandler:     userHandler,
 	}
 
 	r.setupRoutes(apiKey)
@@ -67,10 +70,19 @@ func (r *Router) setupRoutes(apiKey string) {
 			adCopies.PUT("/:id", r.adCopyHandler.Update)
 			adCopies.DELETE("/:id", r.adCopyHandler.Delete)
 		}
+
+		// Monitored Users (手动管理监控用户)
+		users := v1.Group("/users")
+		{
+			users.GET("", r.userHandler.List)
+			users.POST("", r.userHandler.Add)
+			users.POST("/batch", r.userHandler.BatchAdd)
+			users.DELETE("/:id", r.userHandler.Delete)
+			users.PATCH("/:twitter_id/status", r.userHandler.UpdateStatus)
+		}
 	}
 }
 
 func (r *Router) Engine() *gin.Engine {
 	return r.engine
 }
-

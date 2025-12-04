@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"time"
 
 	"github.com/zhoubofsy/x-bot/internal/application/dto"
 	"github.com/zhoubofsy/x-bot/internal/config"
@@ -112,9 +111,9 @@ func (s *workflowService) processUserTweets(
 		s.updateResult(result, processResult)
 
 		// 回复间隔
-		if processResult.Success && !params.DryRun {
-			time.Sleep(s.cfg.ReplyInterval)
-		}
+		// if processResult.Success && !params.DryRun {
+		// 	time.Sleep(s.cfg.ReplyInterval)
+		// }
 	}
 
 	return nil
@@ -146,7 +145,7 @@ func (s *workflowService) processSingleTweet(
 	isHackathon, llmResponse, err := s.hackathonDetector.Detect(ctx, tweet.Text)
 	if err != nil {
 		pr.Error = err
-		s.saveReplyLog(ctx, tweet, "", nil, entity.ReplyStatusFailed, llmResponse, false, err.Error())
+		// s.saveReplyLog(ctx, tweet, "", nil, entity.ReplyStatusFailed, llmResponse, false, err.Error())
 		return pr
 	}
 
@@ -154,7 +153,7 @@ func (s *workflowService) processSingleTweet(
 
 	if !isHackathon {
 		pr.Skipped = true
-		s.saveReplyLog(ctx, tweet, "", nil, entity.ReplyStatusSkipped, llmResponse, false, "")
+		// s.saveReplyLog(ctx, tweet, "", nil, entity.ReplyStatusSkipped, llmResponse, false, "")
 		return pr
 	}
 
@@ -167,14 +166,14 @@ func (s *workflowService) processSingleTweet(
 	adCopy, err := s.adReplyService.GetNextAdCopy(ctx, "hackathon")
 	if err != nil {
 		pr.Error = err
-		s.saveReplyLog(ctx, tweet, "", nil, entity.ReplyStatusFailed, llmResponse, true, err.Error())
+		//s.saveReplyLog(ctx, tweet, "", nil, entity.ReplyStatusFailed, llmResponse, true, err.Error())
 		return pr
 	}
 
 	replyTweet, err := s.adReplyService.ReplyWithAd(ctx, tweet.ID, adCopy)
 	if err != nil {
 		pr.Error = err
-		s.saveReplyLog(ctx, tweet, "", &adCopy.ID, entity.ReplyStatusFailed, llmResponse, true, err.Error())
+		//s.saveReplyLog(ctx, tweet, "", &adCopy.ID, entity.ReplyStatusFailed, llmResponse, true, err.Error())
 		return pr
 	}
 

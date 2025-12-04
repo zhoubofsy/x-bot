@@ -23,10 +23,30 @@ twitter:
   rate_limit_wait: 15m
 
 llm:
-  provider: openai
-  api_key: ${OPENAI_API_KEY}
-  model: gpt-4o-mini
-  base_url: https://api.openai.com/v1
+  # 支持的 provider: openai, gemini, groq
+  # OpenAI 配置示例:
+  #   provider: openai
+  #   api_key: ${OPENAI_API_KEY}
+  #   model: gpt-4o-mini
+  #   base_url: https://api.openai.com/v1
+  # 
+  # 获取API Key https://aistudio.google.com/app/apikey
+  # Google Gemini 配置示例:
+  #   provider: gemini
+  #   api_key: ${GEMINI_API_KEY}
+  #   model: gemini-1.5-flash
+  #   base_url: https://generativelanguage.googleapis.com/v1beta
+  #
+  # Groq 配置示例 (免费):
+  #   provider: openai
+  #   api_key: ${GROQ_API_KEY}
+  #   model: llama-3.1-8b-instant
+  #   base_url: https://api.groq.com/openai/v1
+
+  provider: gemini
+  api_key: ${GEMINI_API_KEY}
+  model: gemini-2.5-flash
+  base_url: https://generativelanguage.googleapis.com/v1beta
   timeout: 30s
   max_retries: 3
 
@@ -38,6 +58,6 @@ workflow:
   schedule: "0 */2 * * *"  # 每2小时执行一次
 
 log:
-  level: info  # debug, info, warn, error
+  level: debug  # debug, info, warn, error
   format: json  # json, console
 

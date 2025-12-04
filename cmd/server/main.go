@@ -80,10 +80,11 @@ func main() {
 	// 初始化 HTTP handlers
 	workflowHandler := handler.NewWorkflowHandler(workflowService, followerService, replyLogRepo)
 	adCopyHandler := handler.NewAdCopyHandler(adCopyRepo)
+	userHandler := handler.NewUserHandler(userRepo)
 
 	// 初始化路由
 	apiKey := os.Getenv("API_KEY")
-	router := api.NewRouter(workflowHandler, adCopyHandler, cfg.Server.Mode, apiKey)
+	router := api.NewRouter(workflowHandler, adCopyHandler, userHandler, cfg.Server.Mode, apiKey)
 
 	// 初始化定时任务
 	sched := scheduler.NewScheduler(workflowService, &cfg.Workflow, logger)

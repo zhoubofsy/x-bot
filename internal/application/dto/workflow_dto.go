@@ -31,6 +31,6 @@ type SyncFollowingResult struct {
 	TotalCount   int      `json:"total_count"`
 	NewCount     int      `json:"new_count"`
 	UpdatedCount int      `json:"updated_count"`
+	Source       string   `json:"source,omitempty"` // "twitter_api" 或 "database"
 	Errors       []string `json:"errors,omitempty"`
 }
-
